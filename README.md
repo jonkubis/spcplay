@@ -33,6 +33,24 @@ corpus. The `universal` build combines both slices into one `.app` bundle.
 See `PORTING_MACOS.md` and `ARM64_PORTING_PLAN.md` for porting notes and
 validation history.
 
+### macOS release builds
+
+The repository includes a GitHub Actions workflow at
+`.github/workflows/macos-build.yml`. Every run builds
+`spcplay-macos.app` as a universal Intel/Apple Silicon app bundle and uploads a
+`spcplay-macos-universal.zip` artifact.
+
+To publish a binary in GitHub Releases, push a version tag:
+
+```sh
+git tag v2.20.0-macos.1
+git push origin v2.20.0-macos.1
+```
+
+The tagged workflow attaches `spcplay-macos-universal.zip` and its SHA-256 file
+to the GitHub Release. Current CI builds are ad-hoc signed, not notarized, so
+macOS Gatekeeper may require manual approval the first time the app is opened.
+
 <!-- 2.20.0 -->
 ![SNES SPC700 Player](https://dgrfactory.jp/img/spcplaye.png)
 

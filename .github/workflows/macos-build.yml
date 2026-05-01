@@ -1,0 +1,59 @@
+name: macOS Build
+
+on:
+  push:
+    branches:
+      - develop
+      - macos-port
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-universal-app:
+    name: Build universal macOS app
+    runs-on: macos-15-intel
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install NASM
+        run: brew install nasm
+
+      - name: Build universal app bundle
+        run: ./scripts/build-spcplay-macos-app.sh universal
+
+      - name: Smoke-test x86_64 app helper
+        run: |
+          build-macos-x86_64/spcplay-macos.app/Contents/MacOS/spcplay-macos --help
+
+      - name: Package release archive
+        run: |
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent \
+            build-macos-universal/spcplay-macos.app \
+            dist/spcplay-macos-universal.zip
+          shasum -a 256 dist/spcplay-macos-universal.zip > dist/spcplay-macos-universal.zip.sha256
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: spcplay-macos-universal
+          path: |
+            dist/spcplay-macos-universal.zip
+            dist/spcplay-macos-universal.zip.sha256
+          if-no-files-found: error
+
+      - name: Attach assets to tagged GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/spcplay-macos-universal.zip
+            dist/spcplay-macos-universal.zip.sha256
+          prerelease: ${{ contains(github.ref_name, '-') }}
