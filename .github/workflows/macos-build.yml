@@ -56,4 +56,5 @@ jobs:
           files: |
             dist/spcplay-macos-universal.zip
             dist/spcplay-macos-universal.zip.sha256
+          generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}

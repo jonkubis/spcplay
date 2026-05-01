@@ -53,8 +53,8 @@ The repository includes a GitHub Actions workflow at
 To publish a binary in GitHub Releases, push a version tag:
 
 ```sh
-git tag v2.20.0-macos.1
-git push origin v2.20.0-macos.1
+git tag v2.21.3-macos.1
+git push origin v2.21.3-macos.1
 ```
 
 The tagged workflow attaches `spcplay-macos-universal.zip` and its SHA-256 file
