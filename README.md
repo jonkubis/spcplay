@@ -1,7 +1,7 @@
 # SNES SPC700 Player + Improved SNESAPU.DLL
 
 This fork carries an unofficial macOS port of SPCplay/SNESAPU alongside the
-original Windows source. The original project is maintained by degrade-factory at
+original Windows source. The original project is maintained by dgr-factory at
 https://github.com/dgrfactory/spcplay.
 
 ![spcplay-macos running Fear of the Heavens](docs/spcplay-macos.png)
