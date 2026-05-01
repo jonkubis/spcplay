@@ -27,6 +27,22 @@
 ;   STDCALL mangles labels and cleans up the stack on returns
 ;   CDECL mangles labels
 
+%ifidn __OUTPUT_FORMAT__,macho64
+    %define HOST64 1
+%elifidn __OUTPUT_FORMAT__,elf64
+    %define HOST64 1
+%elifidn __OUTPUT_FORMAT__,win64
+    %define HOST64 1
+%endif
+
+%ifdef HOST64
+    %define ARG_BYTES 8
+    %define ARG_BASE 16
+%else
+    %define ARG_BYTES 4
+    %define ARG_BASE 8
+%endif
+
 %define ST      ST0
 
 
@@ -39,9 +55,31 @@
 ;Params:
 ;   List of values to be pushed onto the stack.  Values are pushed left to right.
 
-%macro Push 2-*
+%macro Push 1-*
     %rep %0
-        Push    %1
+        %ifdef HOST64
+            %ifidni %1,EAX
+                push    rax
+            %elifidni %1,EBX
+                push    rbx
+            %elifidni %1,ECX
+                push    rcx
+            %elifidni %1,EDX
+                push    rdx
+            %elifidni %1,ESI
+                push    rsi
+            %elifidni %1,EDI
+                push    rdi
+            %elifidni %1,EBP
+                push    rbp
+            %elifidni %1,ESP
+                push    rsp
+            %else
+                push    %1
+            %endif
+        %else
+            push    %1
+        %endif
         %rotate 1
     %endrep
 %endmacro
@@ -53,9 +91,31 @@
 ;Params:
 ;   List of values to be popped off the stack.  Values are popped left to right.
 
-%macro Pop 2-*
+%macro Pop 1-*
     %rep %0
-        Pop     %1
+        %ifdef HOST64
+            %ifidni %1,EAX
+                pop     rax
+            %elifidni %1,EBX
+                pop     rbx
+            %elifidni %1,ECX
+                pop     rcx
+            %elifidni %1,EDX
+                pop     rdx
+            %elifidni %1,ESI
+                pop     rsi
+            %elifidni %1,EDI
+                pop     rdi
+            %elifidni %1,EBP
+                pop     rbp
+            %elifidni %1,ESP
+                pop     rsp
+            %else
+                pop     %1
+            %endif
+        %else
+            pop     %1
+        %endif
         %rotate 1
     %endrep
 %endmacro
@@ -69,17 +129,45 @@
 ;Params:
 ;   Function name followed by stack parameters.  All arguments are assumed to be dwords.
 
-%macro Call 2-*
-    %rep %0-1
+%macro Call 1-*
+    %if %0>1
+        %rep %0-1
+            %rotate -1
+            Push    %1
+        %endrep
         %rotate -1
-        Push    dword %1
-    %endrep
-    %rotate -1
+    %endif
 
-    Call    %1
+    %ifdef HOST64
+        %ifidni %1,EAX
+            call    rax
+        %elifidni %1,EBX
+            call    rbx
+        %elifidni %1,ECX
+            call    rcx
+        %elifidni %1,EDX
+            call    rdx
+        %elifidni %1,ESI
+            call    rsi
+        %elifidni %1,EDI
+            call    rdi
+        %elifidni %1,EBP
+            call    rbp
+        %else
+            call    %1
+        %endif
+    %else
+        call    %1
+    %endif
 
-    %ifndef STDCALL
-        Add     ESP,(%0*4)-4
+    %if %0>1
+        %ifndef STDCALL
+            %ifdef HOST64
+                Add     RSP,(%0*ARG_BYTES)-ARG_BYTES
+            %else
+                Add     ESP,(%0*ARG_BYTES)-ARG_BYTES
+            %endif
+        %endif
     %endif
 %endmacro
 
@@ -206,6 +294,13 @@
             EXTERN  _%1
         %endif
         %xdefine    %1  _%1
+    %elifidn __OUTPUT_FORMAT__,macho64
+        %ifdef  INTERNAL
+            GLOBAL  _%1
+        %else
+            EXTERN  _%1
+        %endif
+        %xdefine    %1  _%1
     %else
         %ifdef  INTERNAL
             GLOBAL  %1
@@ -236,34 +331,73 @@
     %endif
 
     %if %0>1                                                                    ;Does this procedure have any arguments?
-        Push    EBP                                                             ;Create a frame pointer
-        Mov     EBP,ESP
+        %ifdef HOST64
+            Push    EBP                                                         ;Create a frame pointer
+            Mov     RBP,RSP
+        %else
+            Push    EBP                                                         ;Create a frame pointer
+            Mov     EBP,ESP
+        %endif
 
-        %assign %$paramsize (%0*4)-4                                            ;Save the size of the frame
+        %assign %$paramsize (%0*ARG_BYTES)-ARG_BYTES                            ;Save the size of the frame
 
         %if %0>=2                                                               ;Create pointers to each argument
-            %define %2  EBP+8
+            %ifidn HOST64,HOST64
+            %endif
+            %ifdef HOST64
+                %define %2  RBP+ARG_BASE
+            %else
+                %define %2  EBP+ARG_BASE
+            %endif
 
         %if %0>=3
-            %define %3  EBP+12
+            %ifdef HOST64
+                %define %3  RBP+24
+            %else
+                %define %3  EBP+12
+            %endif
 
         %if %0>=4
-            %define %4  EBP+16
+            %ifdef HOST64
+                %define %4  RBP+32
+            %else
+                %define %4  EBP+16
+            %endif
 
         %if %0>=5
-            %define %5  EBP+20
+            %ifdef HOST64
+                %define %5  RBP+40
+            %else
+                %define %5  EBP+20
+            %endif
 
         %if %0>=6
-            %define %6  EBP+24
+            %ifdef HOST64
+                %define %6  RBP+48
+            %else
+                %define %6  EBP+24
+            %endif
 
         %if %0>=7
-            %define %7  EBP+28
+            %ifdef HOST64
+                %define %7  RBP+56
+            %else
+                %define %7  EBP+28
+            %endif
 
         %if %0>=8
-            %define %8  EBP+32
+            %ifdef HOST64
+                %define %8  RBP+64
+            %else
+                %define %8  EBP+32
+            %endif
 
         %if %0>=9
-            %define %9  EBP+36
+            %ifdef HOST64
+                %define %9  RBP+72
+            %else
+                %define %9  EBP+36
+            %endif
 
         %endif
         %endif
@@ -286,12 +420,16 @@
 ;   Variable names (each var is allocated 32-bits)
 
 %macro LOCALS 1-4
-    %assign %$localsize %0*4                                                    ;Save the size of the local variables
+    %assign %$localsize %0*ARG_BYTES                                            ;Save the size of the local variables
 
     %ifndef %$paramsize                                                         ;If a stack frame hasn't been created, create one
         %assign %$paramsize 0                                                   ;No arguments
         Push    EBP
-        Mov     EBP,ESP
+        %ifdef HOST64
+            Mov     RBP,RSP
+        %else
+            Mov     EBP,ESP
+        %endif
     %endif
 
     %if %0>4
@@ -299,23 +437,43 @@
     %endif
 
     %if %0>=1                                                                   ;Create pointers to each of the locals
-        %define %1  EBP-4
+        %ifdef HOST64
+            %define %1  RBP-8
+        %else
+            %define %1  EBP-4
+        %endif
 
     %if %0>=2
-        %define %2  EBP-8
+        %ifdef HOST64
+            %define %2  RBP-16
+        %else
+            %define %2  EBP-8
+        %endif
 
     %if %0>=3
-        %define %3  EBP-12
+        %ifdef HOST64
+            %define %3  RBP-24
+        %else
+            %define %3  EBP-12
+        %endif
 
     %if %0>=4
-        %define %4  EBP-16
+        %ifdef HOST64
+            %define %4  RBP-32
+        %else
+            %define %4  EBP-16
+        %endif
 
     %endif
     %endif
     %endif
     %endif
 
-    Sub     ESP,%$localsize                                                     ;Allocate space on the stack
+    %ifdef HOST64
+        Sub     RSP,%$localsize                                                 ;Allocate space on the stack
+    %else
+        Sub     ESP,%$localsize                                                 ;Allocate space on the stack
+    %endif
 %endmacro
 
 

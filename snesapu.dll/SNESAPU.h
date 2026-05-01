@@ -54,7 +54,7 @@ typedef struct {
     void        (__stdcall *FixSPC)(u16 pc, u8 a, u8 y, u8 x, u8 psw, u8 sp);
     void        (__stdcall *FixSeek)(u8 reset);
     void        (__stdcall *GetAPUData)(u8 **ppAPURAM, u8 **ppExtraRAM, u8 **ppSPCOut, u32 **ppT64Cnt, DSPReg **ppDSP, Voice **ppMix, u32 **ppVMMaxL, u32 **ppVMMaxR);
-    void        (__stdcall *GetScript700Data)(char *pVer, u32 **ppSPCReg, u8 **ppScript700);
+    void        (__stdcall *GetScript700Data)(char *pVer, uptr **ppSPCReg, u8 **ppScript700);
     u32         (__stdcall *GetSNESAPUContext)(void *pCtxOut);
     u32         (__stdcall *GetSNESAPUContextSize)();
     void        (__stdcall *GetSPCRegs)(u16 *pPC, u8 *pA, u8 *pY, u8 *pX, u8 *pPSW, u8 *pSP);
@@ -106,7 +106,7 @@ import  void        __stdcall FixDSP();
 import  void        __stdcall FixSPC(u16 pc, u8 a, u8 y, u8 x, u8 psw, u8 sp);
 import  void        __stdcall FixSeek(u8 reset);
 import  void        __stdcall GetAPUData(u8 **ppAPURAM, u8 **ppExtraRAM, u8 **ppSPCOut, u32 **ppT64Cnt, DSPReg **ppDSP, Voice **ppMix, u32 **ppVMMaxL, u32 **ppVMMaxR);
-import  void        __stdcall GetScript700Data(char *pVer, u32 **ppSPCReg, u8 **ppScript700);
+import  void        __stdcall GetScript700Data(char *pVer, uptr **ppSPCReg, u8 **ppScript700);
 import  u32         __stdcall GetSNESAPUContext(void *pCtxOut);
 import  u32         __stdcall GetSNESAPUContextSize();
 import  void        __stdcall GetSPCRegs(u16 *pPC, u8 *pA, u8 *pY, u8 *pX, u8 *pPSW, u8 *pSP);

@@ -98,6 +98,7 @@ PUBLIC  pAPURAM                                                 ;Pointer to SNES
 PUBLIC  pSCRRAM                                                 ;Pointer to Script700 RAM
 PUBLIC  apuCbMask                                               ;SNESAPU callback mask
 PUBLIC  apuCbFunc                                               ;SNESAPU callback function
+PUBLIC  apuDbgStage                                             ;Temporary macOS port stage marker
 
 
 ;===================================================================================================

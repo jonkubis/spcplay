@@ -34,3 +34,11 @@ typedef long long int s64;
 typedef float f32;
 typedef double f64;
 typedef long double f80;
+
+#if defined(_WIN64) || defined(__LP64__) || defined(__x86_64__) || defined(__aarch64__)
+typedef u64 uptr;
+typedef s64 sptr;
+#else
+typedef u32 uptr;
+typedef s32 sptr;
+#endif

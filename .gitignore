@@ -1,0 +1,42 @@
+.DS_Store
+*.swp
+*.swo
+
+# macOS/Xcode/editor output
+DerivedData/
+*.xcuserdata/
+*.xcuserstate
+
+# Local build output
+build-*/
+*.o
+*.obj
+*.dylib
+*.app/
+*.map
+*.pdb
+*.ilk
+*.lib
+Release/
+Debug/
+
+# Local audio/test artifacts
+*.wav
+*.aiff
+*.aif
+*.spc
+*.sp0
+*.sp1
+*.sp2
+*.sp3
+*.sp4
+*.sp5
+*.sp6
+*.sp7
+*.sp8
+*.sp9
+
+# Scratch/reference corpora and generated comparison reports
+reference-macos/
+reference-windows/artifacts/
+build-snesapu-compare/

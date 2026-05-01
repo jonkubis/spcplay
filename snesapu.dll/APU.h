@@ -103,9 +103,11 @@ extern  "C" u32 scr700cmp[2];                   //Script700 Compare parameters
 extern  "C" u32 scr700cnt;                      //Script700 Waiting count
 extern  "C" u32 scr700ptr;                      //Script700 Program pointer
 extern  "C" u8  scr700stf;                      //Script700 Status flags
+extern  "C" u8  scr700int[2];                   //Script700 Interrupt ports
 extern  "C" u32 scr700dat;                      //Script700 Data area offset
-extern  "C" u32 pAPURAM;                        //Pointer to SNESAPU 64KB RAM
-extern  "C" u32 pSCRRAM;                        //Pointer to Script700 RAM
+extern  "C" uptr scr700stp;                     //Script700 Stack pointer
+extern  "C" uptr pAPURAM;                       //Pointer to SNESAPU 64KB RAM
+extern  "C" uptr pSCRRAM;                       //Pointer to Script700 RAM
 #else
 extern  u32 apuOpt;
 extern  u8  scr700dsp[256];
@@ -119,9 +121,11 @@ extern  u32 scr700cmp[2];
 extern  u32 scr700cnt;
 extern  u32 scr700ptr;
 extern  u8  scr700stf;
+extern  u8  scr700int[2];
 extern  u32 scr700dat;
-extern  u32 pAPURAM;
-extern  u32 pSCRRAM;
+extern  uptr scr700stp;
+extern  uptr pAPURAM;
+extern  uptr pSCRRAM;
 #endif
 
 
@@ -195,7 +199,7 @@ void GetAPUData(u8 **ppRAM, u8 **ppXRAM, u8 **ppOutPort, u32 **ppT64Cnt, DSPReg 
 //    ppSPCReg    -> Pointer of SPC700 register
 //    ppScript700 -> Pointer of Script700 work memory
 
-void GetScript700Data(char *pDLLVer, u32 **ppSPCReg, u8 **ppScript700);
+void GetScript700Data(char *pDLLVer, uptr **ppSPCReg, u8 **ppScript700);
 
 
 //**************************************************************************************************

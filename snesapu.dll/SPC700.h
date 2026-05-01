@@ -132,12 +132,12 @@ typedef void SPCDebug(volatile u8 *pc, volatile u16 ya, volatile u8 x, volatile 
 extern  "C" u8  extraRAM[64];                   //RAM used for storage if ROM reading is enabled
 extern  "C" u8  outPort[4];                     //Four out ports
 extern  "C" u32 t64Cnt;                         //Counter increased every 64kHz
-extern  "C" u32 pSPCReg;                        //Pointer to SPC700 Register Buffer
+extern  "C" uptr pSPCReg;                       //Pointer to SPC700 Register Buffer
 #else
 extern  u8  extraRAM[64];
 extern  u8  outPort[4];
 extern  u32 t64Cnt;
-extern  u32 pSPCReg;
+extern  uptr pSPCReg;
 #endif
 
 

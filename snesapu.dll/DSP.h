@@ -208,9 +208,17 @@ typedef struct Voice
     u16     vAdsr;                              //ADSR parameters when KON was written
     u8      vGain;                              //Gain parameters when KON was written
     u8      vRsv;                               //Changed ADSR/Gain parameters flag
+#if defined(_WIN64) || defined(__LP64__) || defined(__x86_64__) || defined(__aarch64__)
+    u32     sIdx;                               //Current sample offset in sBuf (host64 stores offsets)
+#else
     s16     *sIdx;                              //-> current sample in sBuf
+#endif
     //Waveform --------06
+#if defined(_WIN64) || defined(__LP64__) || defined(__x86_64__) || defined(__aarch64__)
+    u32     bCur;                               //Current BRR block offset in APU RAM (host64 stores offsets)
+#else
     void    *bCur;                              //-> current block
+#endif
     u8      bHdr;                               //Block Header for current block
     u8      mFlg;                               //Mixing flags (see MixF)
     //Envelope --------22
